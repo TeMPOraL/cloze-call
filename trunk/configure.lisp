@@ -6,5 +6,13 @@
 
 (format t "Hello from configure!~%")
 
+;;; Display constants
 (defparameter +screen-width+ 800)
 (defparameter +screen-height+ 600)
+(defparameter +window-title+ "(Cloze Call)")
+
+;;; Simulation constants
+(defparameter +fixed-dt+ (floor (/ 1000 30))) ; 30 steps / second
+(defparameter +maximum-dt+ 500) ; maximum dt allowed - time step
+                                ;will be trimmed to that value
+
