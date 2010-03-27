@@ -22,4 +22,4 @@
 (defparameter +levels-asset-path+ "data/levels/")
 
 ;;; Game constants
-(defparameter +default-game-screen-time+ 1.0) ; in seconds
+(defparameter +default-game-screen-time+ 2.0) ; in seconds

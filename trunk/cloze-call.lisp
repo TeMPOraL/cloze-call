@@ -33,7 +33,7 @@
         (:idle
          (sdl:with-timestep ()
            ;; update game state manager here
-           (update-gsm gsm (sdl:dt)))
+           (update-gsm gsm (float (/ (sdl:dt) 1000)))) ; also convert dt from miliseconds to seconds
          ;; render game state manager
          (render-gsm gsm)
          (sdl:update-display))

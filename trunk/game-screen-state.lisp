@@ -27,8 +27,9 @@
 (defmethod initialize-state ((game-state screen-game-state)
                              gsm)
   (declare (ignore gsm))
-  (with-slots (big-picture-name big-picture) game-state
-    (setf big-picture (sdl:load-image
+  (with-slots (big-picture-name big-picture accumulator) game-state
+    (setf accumulator 0.0) ; zero the time accumulator
+    (setf big-picture (sdl:load-image ; load screen image
                        (merge-pathnames big-picture-name
                                         +gfx-asset-path+)))))
 
@@ -36,11 +37,16 @@
                                gsm)
   (declare (ignore game-state gsm)))
 
+;;; TODO add fade-ins and fade-outs
+
 (defmethod update-logic ((game-state screen-game-state)
                          gsm
                          dt)
-  (declare (ignore gsm dt))
-  ()); TODO - handle image processing and state chagne here!
+  (with-slots (accumulator time next-state) game-state
+    (setf accumulator (+ accumulator dt))
+    (if (> accumulator time)
+        (change-state gsm next-state)
+        t)))
 
 (defmethod render ((game-state screen-game-state)
                    gsm)
