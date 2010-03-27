@@ -83,14 +83,6 @@
     ,@body
     (deinitialize-gsm ,gsm-name)))
 
-;;(with-game-state-manager gsm
-;;  (code))
-;; should expand to:
-;;(let ((game-state-manager (make-instance 'game-state-manager)))
-;;  (initialize-game-state-manager gsm)
-;;  (code)
-;;  (deinitialize-game-state-manager gsm))
-
 ;;; Game State base class
 (defclass game-state ()
   () )
