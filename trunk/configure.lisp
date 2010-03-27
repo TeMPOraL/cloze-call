@@ -20,3 +20,6 @@
 (defparameter +gfx-asset-path+ "data/gfx/")
 (defparameter +sfx-asset-path+ "data/sfx/")
 (defparameter +levels-asset-path+ "data/levels/")
+
+;;; Game constants
+(defparameter +default-game-screen-time+ 1.0) ; in seconds
