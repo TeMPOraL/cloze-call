@@ -6,6 +6,7 @@
 (load "math.lisp")      ; math module
 (load "game-state-manager.lisp") ; game state manager module
 (load "test-game-state.lisp") ; test game state
+(load "game-screen-state.lisp") ; game screens - victory, intro, ect.
 (load "game-objects.lisp") ; game classes
                            ; FIXME move to game state :)
 
@@ -21,13 +22,15 @@
     (with-game-state-manager gsm
       ;;; REGISTER GAME STATES
       (register-game-state gsm :test-state (make-instance 'test-game-state))
-      (change-state gsm :test-state)
+      (register-game-state gsm :intro-screen (make-instance 'screen-game-state
+                                                            :picture-name "intro.bmp"
+                                                            :next-state :test-state))
+      (change-state gsm :intro-screen)
       ;;; EVENT PUMP / MAIN LOOP
       (sdl:with-events ()
 
         ;; UPDATE EVENT
         (:idle
-         (sdl:clear-display sdl:*green*)
          (sdl:with-timestep ()
            ;; update game state manager here
            (update-gsm gsm (sdl:dt)))
