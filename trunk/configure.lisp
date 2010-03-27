@@ -16,3 +16,7 @@
 (defparameter +maximum-dt+ 500) ; maximum dt allowed - time step
                                 ;will be trimmed to that value
 
+;;; Resource constants
+(defparameter +gfx-asset-path+ "data/gfx/")
+(defparameter +sfx-asset-path+ "data/sfx/")
+(defparameter +levels-asset-path+ "data/levels/")
