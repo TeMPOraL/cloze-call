@@ -7,8 +7,7 @@
 (load "game-state-manager.lisp") ; game state manager module
 (load "test-game-state.lisp") ; test game state
 (load "game-screen-state.lisp") ; game screens - victory, intro, ect.
-(load "game-objects.lisp") ; game classes
-                           ; FIXME move to game state :)
+(load "main-game-state.lisp")  ; main game state - the real game is here ;)
 
 (format t "Hello from Cloze-Call~%")
 
