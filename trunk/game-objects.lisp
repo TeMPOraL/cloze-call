@@ -46,8 +46,8 @@
   (error "Something is drawn, that shouldn't be."))
 
 (defmethod draw ((object game-object))
-  (with-slots (position image) object
-    (draw-image image :position position)))
+  (with-slots (position size image) object
+    (draw-image image :position position :dimmensions size)))
 
 (defmethod deinit ((object game-object))
   (declare (ignore object)))
@@ -59,7 +59,7 @@
 
 (defmethod init ((object celestial-body))
   (setf (slot-value object 'image)
-        (load-image "planet1.bmp" :color-key-at #(0 0))))
+        (load-image "planet1-debug.bmp" :color-key-at #(0 0))))
 
 
 ;;; Ball class - defines the ball that player has to shoot into
@@ -76,7 +76,7 @@
 
 (defmethod init ((object ball))
   (setf (slot-value object 'image)
-        (load-image "ball.bmp")))
+        (load-image "ball-debug.bmp" :color-key-at #(0 0))))
 
 ;;; Hole class - defines the target for player to shoot ball at.
 (defclass hole (game-object)
@@ -84,4 +84,4 @@
 
 (defmethod init ((object hole))
   (setf (slot-value object 'image)
-        (load-image "hole.bmp")))
+        (load-image "hole-debug.bmp" :color-key-at #(0 0))))

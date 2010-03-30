@@ -10,5 +10,11 @@
       (sdl:load-image pathname))))
 
 
-(defun draw-image (image &key (position (make-vector-2d)))
-  (sdl:draw-surface-at image position))
+(defun draw-image (image &key
+                   (position (make-vector-2d))
+                   (dimmensions (make-vector-2d)))
+  (sdl:draw-surface-at-* image
+                         (round (- (elt position 0)
+                                   (/ (elt dimmensions 0) 2)))
+                         (round (- (elt position 1)
+                                   (/ (elt dimmensions 1) 2)))))
