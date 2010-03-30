@@ -14,14 +14,19 @@
   (with-game-objects-init
       (make-instance 'celestial-body
                      :position (make-vector-2d 250 250)
-                     :mass 0
-                     :radius 32
-                     :dimmensions 64)
+                     :mass 500
+                     :radius 64
+                     :dimmensions (make-vector-2d 128 128))
+    (make-instance 'celestial-body
+                   :position (make-vector-2d 700 70)
+                   :mass 600
+                   :radius 64
+                   :dimmensions (make-vector-2d 128 128))
     (make-instance 'celestial-body
                    :position (make-vector-2d 500 500)
-                   :mass 0
-                   :radius 20
-                   :dimmensions 40)))
+                   :mass 500
+                   :radius 64
+                   :dimmensions (make-vector-2d 128 128))))
 
 (defun level-get-ball ()
   (car ; CAR - because this macro returns a list. FIXME looks like a hack
@@ -30,7 +35,8 @@
                       :position (make-vector-2d 400 300)
                       :mass 100000
                       :radius 16
-                      :dimmensions 32))))
+                      :dimmensions (make-vector-2d 32 32)
+                      :velocity (make-vector-2d -50 -150)))))
 
 (defun level-get-hole ()
   (car ; CAR - because this macro returns a list. FIXME looks like a hack
@@ -39,4 +45,4 @@
                       :position (make-vector-2d 100 50)
                       :mass 0
                       :radius 16
-                      :dimmensions 32))))
+                      :dimmensions (make-vector-2d 32 32)))))

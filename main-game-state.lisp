@@ -77,7 +77,8 @@
     (setf velocity (add-vectors velocity
                                 (scaled-vector force
                                                (/ dt
-                                                  mass))))
+                                                  ;mass))))
+                                                  1))))
     (setf position (add-vectors position
                                 (scaled-vector velocity
                                                dt)))))
@@ -93,16 +94,30 @@
             bodies
             :initial-value (make-vector-2d 0.0 0.0))))
 
+(defun collisions-p (celestial-bodies ball)
+  (not (null (find-if
+         (lambda (body) (< (distance-between-vectors (slot-value body 'position)
+                                                     (slot-value ball 'position))
+                           (+ (slot-value body 'radius)
+                              (slot-value ball 'radius))))
+         celestial-bodies))))
+
 (defmethod update-logic ((game-state main-game-state)
                          gsm
                          dt)
   (declare (ignore gsm))
-  (with-slots (celestial-bodies ball hole) game-state
-    (apply-force ball
-                 (scaled-vector
-                  (compute-gravity-field celestial-bodies ball)
-                  (* +G+ (slot-value ball 'mass)))
-                 dt)))
+  (with-slots (celestial-bodies ball hole simulation-running) game-state
+    (if simulation-running
+        (progn
+          (apply-force ball
+                       (scaled-vector
+                        (compute-gravity-field celestial-bodies ball)
+                                        ;(* +G+ (slot-value ball 'mass)))
+                        +G+)
+                       dt)
+          (if (collisions-p celestial-bodies ball)
+            ;(disable-simulation game-state)))))
+              (setf simulation-running nil))))))
 ; TODO handle ball-hole collision
 
 

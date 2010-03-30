@@ -20,8 +20,8 @@
                 :fps (make-instance 'sdl:fps-timestep
                                     :max-dt +maximum-dt+ ; timestep upper bound
                                     :dt +fixed-dt+); fixed time step
-                :video-driver "directx"
-                :double-buffer t)
+                );:video-driver "directx"
+                ;:double-buffer t)
     (with-game-state-manager gsm
       ;;; REGISTER GAME STATES
       (register-game-state gsm :test-state (make-instance 'test-game-state))
