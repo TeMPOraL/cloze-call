@@ -29,9 +29,7 @@
   (declare (ignore gsm))
   (with-slots (big-picture-name big-picture accumulator) game-state
     (setf accumulator 0.0) ; zero the time accumulator
-    (setf big-picture (sdl:load-image ; load screen image
-                       (merge-pathnames big-picture-name
-                                        +gfx-asset-path+)))))
+    (setf big-picture (load-image big-picture-name))))
 
 (defmethod deinitialize-state ((game-state screen-game-state)
                                gsm)
@@ -52,4 +50,4 @@
                    gsm)
   (declare (ignore gsm))
   (with-slots (big-picture picture-position) game-state
-    (sdl:draw-surface-at big-picture picture-position)))
+    (draw-image big-picture)))

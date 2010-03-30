@@ -4,10 +4,12 @@
 
 (load "configure.lisp") ; game configuration
 (load "math.lisp")      ; math module
+(load "pictures.lisp")  ; image library :)
 (load "game-state-manager.lisp") ; game state manager module
 (load "test-game-state.lisp") ; test game state
 (load "game-screen-state.lisp") ; game screens - victory, intro, ect.
 (load "main-game-state.lisp")  ; main game state - the real game is here ;)
+
 
 (format t "Hello from Cloze-Call~%")
 
@@ -17,13 +19,17 @@
                 :title-caption +window-title+
                 :fps (make-instance 'sdl:fps-timestep
                                     :max-dt +maximum-dt+ ; timestep upper bound
-                                    :dt +fixed-dt+)) ; fixed time step
+                                    :dt +fixed-dt+); fixed time step
+                :video-driver "directx"
+                :double-buffer t)
     (with-game-state-manager gsm
       ;;; REGISTER GAME STATES
       (register-game-state gsm :test-state (make-instance 'test-game-state))
       (register-game-state gsm :intro-screen (make-instance 'screen-game-state
                                                             :picture-name "intro.bmp"
-                                                            :next-state :test-state))
+                                                            :next-state :main-game))
+      (register-game-state gsm :main-game (make-instance 'main-game-state
+                                                         :run-level "ojej"))
       (change-state gsm :intro-screen)
       ;;; EVENT PUMP / MAIN LOOP
       (sdl:with-events ()

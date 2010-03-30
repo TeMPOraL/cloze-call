@@ -23,3 +23,4 @@
 
 ;;; Game constants
 (defparameter +default-game-screen-time+ 2.0) ; in seconds
+(defparameter +G+ 7) ; gravity constant 7*10^-11

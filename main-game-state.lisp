@@ -2,6 +2,7 @@
 (in-package trc.cloze-call)
 
 (load "game-objects.lisp") ; game classes
+(load "levels.lisp") ; level handling
 
 (defclass main-game-state (game-state)
   ((celestial-bodies
@@ -23,9 +24,6 @@
     :initarg :run-level
     :initform (error "A default level must be specified!")
     :documentation "Level that will be loaded as next.")))
-
-(defun load-level (level-name)
-  (load (merge-pathnames level-name +levels-asset-path+)))
 
 ;;; LEVEL FUNCTIONS
 ;;; Will be redefined by loaded levels.
@@ -58,9 +56,7 @@
     (setf celestial-bodies (level-get-celestial-bodies))
     
     ;; * Load other important objects
-    (setf background-image (sdl:load-image
-                            (merge-pathnames (level-get-background-image-name)
-                                             +gfx-asset-path+)))
+    (setf background-image (load-image (level-get-background-image-name)))
     ;; * Set proper flags
     (setf simulation-running t)
     (setf ball (level-get-ball))
@@ -76,10 +72,49 @@
                                gsm)
   (declare (ignore game-state gsm)))
 
+(defun apply-force (ball force dt)
+  (with-slots (position velocity mass) ball
+    (setf velocity (add-vectors velocity
+                                (scaled-vector force
+                                               (/ dt
+                                                  mass))))
+    (setf position (add-vectors position
+                                (scaled-vector velocity
+                                               dt)))))
+
+(defun compute-gravity-field (bodies ball)
+  (with-slots (position) ball
+    (reduce (lambda (total body) (add-vectors total
+                                              (scaled-vector
+                                               (normalized-vector (add-vectors position (negative-vector (slot-value body 'position))))
+                                               (/ (slot-value body 'mass)
+                                                  (square (distance-between-vectors position
+                                                                                    (slot-value body 'position)))))))
+            bodies
+            :initial-value (make-vector-2d 0.0 0.0))))
+
 (defmethod update-logic ((game-state main-game-state)
                          gsm
                          dt)
-  (declare (ignore game-state gsm dt)))
+  (declare (ignore gsm))
+  (with-slots (celestial-bodies ball hole) game-state
+    (apply-force ball
+                 (scaled-vector
+                  (compute-gravity-field celestial-bodies ball)
+                  (* +G+ (slot-value ball 'mass)))
+                 dt)))
+; TODO handle ball-hole collision
+
+
+;  (flet ((compute-gravity-field (total-field body point-in-space)
+;           (with-slots (body-position body-mass) body
+;             (* +G+ (/ body-mass
+;                       (distance-between-vectors point-in-space body-position))))))
+;    (with-slots (celestial-bodies ball) game-state
+;      (let ((gravity-field (reduce (lambda (total body)
+;  (compute-gravity-field total body (slot-value ball 'position)))
+;  celestial-bodies)))
+;        (format t "Compute physics here.")))))
 
 (defmethod render ((game-state main-game-state)
                    gsm)
@@ -87,4 +122,10 @@
   ;; * Draw background
   ;; * Draw game objects
   ;; * Draw foreground / overlays
-  (declare (ignore game-state gsm)))
+  (declare (ignore gsm))
+  (with-slots (background-image celestial-bodies hole ball) game-state
+    (sdl:clear-display sdl:*black*)
+    (draw-image background-image)
+    (map nil #'draw celestial-bodies)
+    (draw hole)
+    (draw ball))) ; TODO draw UI

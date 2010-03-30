@@ -12,10 +12,7 @@
                              gsm)
   (declare (ignore gsm))
   (with-slots (test-picture) game-state
-    (setf test-picture (sdl:load-image
-                        (merge-pathnames "lisp.bmp"
-                                         +gfx-asset-path+)
-                        :color-key-at #(0 0))))
+    (setf test-picture (load-image "lisp.bmp" :color-key-at #(0 0))))
   (format t "test-game-state - init~%"))
 
 (defmethod deinitialize-state ((game-state test-game-state)
