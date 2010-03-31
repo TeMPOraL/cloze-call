@@ -29,7 +29,10 @@
     :documentation "Current state of left mouse button. T if pressed, NIL if depressed.")
    (mouse-prev-left-button-state
     :initform nil
-    :documentation "State of left mouse button before last check. T if pressed, NIL if depressed.")))
+    :documentation "State of left mouse button before last check. T if pressed, NIL if depressed.")
+   (lives
+    :initform 3
+    :documentation "How many attempts the player has.")))
 
 (defun rising-edge (signal-prev signal-curr)
   (and (null signal-prev) (not (null signal-curr))))
@@ -58,7 +61,8 @@
                              gsm)
   (declare (ignore gsm))
   (with-slots (celestial-bodies ball hole simulation-running
-                                background-image next-level)  game-state
+                                background-image next-level
+                                lives state)  game-state
     
     (load-level next-level)
     ;; * Load planets from level
@@ -66,8 +70,15 @@
     ;; * Load other important objects
     (setf background-image (load-image (level-get-background-image-name)))
 
+    (setf lives 3)
+    (setf state :aiming)
     (setf ball (level-get-ball))
     (setf hole (level-get-hole))))
+
+(defun reinitialize-game (game-state)
+  (with-slots (ball) game-state
+    (change-game-state game-state :aiming)
+    (setf ball (level-get-ball)))) ; FIXME assumes that level doesn't do magic on ball position (ie. using grid coord list!
 
 (defmethod deinitialize-state ((game-state main-game-state)
                                gsm)
@@ -189,22 +200,38 @@
   (declare (ignore game-state)))
 
 ;;; Hole collision
-(defun update-hole-collision (game-state dt)
-  (declare (ignore game-state dt)))
+(defun update-hole-collision (game-state dt gsm)
+  (declare (ignore game-state dt))
+  (change-state gsm :victorious))
 
 (defun render-hole-collision (game-state)
   (declare (ignore game-state)))
 
 ;;; Planet collision
-(defun update-planet-collision (game-state dt)
-  (declare (ignore game-state dt)))
+(defun update-planet-collision (game-state dt gsm)
+  (declare (ignore dt))
+  (with-slots (lives) game-state
+    (setf lives (- lives 1))
+    (if (= lives 0)
+        (change-state gsm :defeated)
+        (progn
+          (reinitialize-game game-state)
+          (change-game-state game-state :aiming)))))
+
 
 (defun render-planet-collision (game-state)
   (declare (ignore game-state)))
 
 ;;; Off-world
-(defun update-off-world (game-state dt)
-  (declare (ignore game-state dt)))
+(defun update-off-world (game-state dt gsm)
+  (declare (ignore dt))
+  (with-slots (lives) game-state
+    (setf lives (- lives 1))
+    (if (= lives 0)
+        (change-state gsm :defeated)
+        (progn
+          (reinitialize-game game-state)
+          (change-game-state game-state :aiming)))))
 
 (defun render-off-world (game-state)
   (declare (ignore game-state)))
@@ -228,14 +255,13 @@
 (defmethod update-logic ((game-state main-game-state)
                          gsm
                          dt)
-  (declare (ignore gsm))
   (update-common game-state dt)
   (case (slot-value game-state 'state)
     (:aiming (update-aiming game-state dt))
     (:simulation (update-simulation game-state dt))
-    (:hole-collision (update-hole-collision game-state dt))
-    (:planet-collision (update-planet-collision game-state dt))
-    (:off-world (update-off-world game-state dt))))
+    (:hole-collision (update-hole-collision game-state dt gsm))
+    (:planet-collision (update-planet-collision game-state dt gsm))
+    (:off-world (update-off-world game-state dt gsm))))
 
 (defmethod render ((game-state main-game-state)
                    gsm)

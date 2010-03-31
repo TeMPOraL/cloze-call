@@ -6,8 +6,8 @@
   (let ((pathname (merge-pathnames image-name
                                    +gfx-asset-path+)))
   (if color-key-supplied-p
-      (sdl:load-image pathname :color-key-at color-key-at)
-      (sdl:load-image pathname))))
+      (sdl:load-image pathname :color-key-at color-key-at :alpha 255)
+      (sdl:load-image pathname :alpha 255))))
 
 
 (defun draw-image (image &key

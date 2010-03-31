@@ -27,7 +27,6 @@
 (defun negative-vector (vec1)
   "Returns a new vector - negation of given one"
   (map 'vector #'- vec1))
-
 (defun negate-vector (vec1)
   "Negates current vector."
   (map-into vec1 #'- vec1))

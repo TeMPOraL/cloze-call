@@ -20,16 +20,25 @@
                 :fps (make-instance 'sdl:fps-timestep
                                     :max-dt +maximum-dt+ ; timestep upper bound
                                     :dt +fixed-dt+); fixed time step
-                );:video-driver "directx"
-                ;:double-buffer t)
+                :video-driver "directx"
+                :double-buffer t)
     (with-game-state-manager gsm
       ;;; REGISTER GAME STATES
       (register-game-state gsm :test-state (make-instance 'test-game-state))
       (register-game-state gsm :intro-screen (make-instance 'screen-game-state
-                                                            :picture-name "intro.bmp"
-                                                            :next-state :main-game))
+                                                            :picture-name "intro1.png"
+                                                            :next-state :intro-screen-2))
+      (register-game-state gsm :intro-screen-2 (make-instance 'screen-game-state
+                                                             :picture-name "intro2.png"
+                                                             :next-state :main-game))
       (register-game-state gsm :main-game (make-instance 'main-game-state
                                                          :run-level "ojej"))
+      (register-game-state gsm :defeated (make-instance 'screen-game-state
+                                                        :picture-name "defeated.png"
+                                                        :next-state :main-game))
+      (register-game-state gsm :victorious (make-instance 'screen-game-state
+                                                          :picture-name "victorious.png"
+                                                          :next-state :main-game))
       (change-state gsm :intro-screen)
       ;;; EVENT PUMP / MAIN LOOP
       (sdl:with-events ()
