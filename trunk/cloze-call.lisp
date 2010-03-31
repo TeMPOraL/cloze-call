@@ -33,6 +33,7 @@
       (change-state gsm :intro-screen)
       ;;; EVENT PUMP / MAIN LOOP
       (sdl:with-events ()
+        ;; INPUT EVENTS
 
         ;; UPDATE EVENT
         (:idle

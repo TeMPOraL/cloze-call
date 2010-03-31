@@ -25,48 +25,22 @@
     :initform (error "A default level must be specified!")
     :documentation "Level that will be loaded as next.")))
 
-;;; LEVEL FUNCTIONS
-;;; Will be redefined by loaded levels.
-;;; Below are function templates (stubs).
-
-;;; FIXME
-;;; .:20:18:03:. <tcr> Strictly speaking, their definition should not be in the same file as their uses, as implementations are permitted to arbitrarily inline in that case.
-;;; .:20:18:39:. <tcr> I'd probably add an extra level of indirection
-;;; .:20:18:42:. <stassats`> there's notinline, but still the whole thing doesn't sound right to me
-;;; .:20:18:46:. <lhz> can't you muffle that style-warning (along with redefine SW)?
-;;; .:20:19:00:. <tcr> (defun foo (args...) (funcall *foo-function* ...))
-
-;(defgeneric level-get-celestial-bodies ()
- ; (:documentation "Load ")
-
-;(defun level-
-
-;;; END OF LEVEL FUNCTIONS
-
 (defmethod initialize-state ((game-state main-game-state)
                              gsm)
   (declare (ignore gsm))
   (with-slots (celestial-bodies ball hole simulation-running
                                 background-image next-level)  game-state
     
-    ;;TODO:
-    ;; * Load level
     (load-level next-level)
     ;; * Load planets from level
     (setf celestial-bodies (level-get-celestial-bodies))
-    
     ;; * Load other important objects
     (setf background-image (load-image (level-get-background-image-name)))
-    ;; * Set proper flags
-    (setf simulation-running t)
+
     (setf ball (level-get-ball))
     (setf hole (level-get-hole))
-    
-    ;; Loading level could be done by (load)ing a level file
-    ;; with functions that would return a list of planets,
-    ;; a background file name, ect. Or maybe even variables - 
-    ;; we don't want to have a mess here.
-    ))
+
+    (setf simulation-running t)))
 
 (defmethod deinitialize-state ((game-state main-game-state)
                                gsm)
@@ -95,6 +69,7 @@
             :initial-value (make-vector-2d 0.0 0.0))))
 
 (defun collisions-p (celestial-bodies ball)
+  "Returns true if the ball collides with any planet"
   (not (null (find-if
          (lambda (body) (< (distance-between-vectors (slot-value body 'position)
                                                      (slot-value ball 'position))
@@ -102,6 +77,57 @@
                               (slot-value ball 'radius))))
          celestial-bodies))))
 
+(defun offworld-p (celestial-bodies ball)
+  "Returns true if the ball is far outside game world and has no chance of gettiing back in any reasonable amount of time."
+  (declare (ignore celestial-bodies ball))
+  nil)
+
+;;; MAIN GAME STATES
+;;; Main game has been separated to several game states:
+;;; * Beginning/aiming
+;;; * Simulation
+;;; * Hole collision
+;;; * Planet collision
+;;; * Off-world
+;;;
+;;; Each of these states gets its own pair of update/render functions.
+
+;;; Beginning / aiming
+(defun update-aiming (game-state dt)
+  (declare (ignore game-state dt)))
+
+(defun render-aiming (game-state)
+  (declare (ignore game-state)))
+
+;;; Simulation
+(defun update-simulation (game-state dt)
+  (declare (ignore game-state dt)))
+
+(defun render-simulation (game-state)
+  (declare (ignore game-state)))
+
+;;; Hole collision
+(defun update-hole-collision (game-state dt)
+  (declare (ignore game-state dt)))
+
+(defun render-hole-collision (game-state)
+  (declare (ignore game-state)))
+
+;;; Planet collision
+(defun update-planet-collision (game-state dt)
+  (declare (ignore game-state dt)))
+
+(defun render-planet-collision (game-state)
+  (declare (ignore game-state)))
+
+;;; Off-world
+(defun update-off-world (game-state dt)
+  (declare (ignore game-state dt)))
+
+(defun render-off-world (game-state)
+  (declare (ignore game-state)))
+
+;;; GENERIC UPDATE/RENDER FUNCTIONS BELOW
 (defmethod update-logic ((game-state main-game-state)
                          gsm
                          dt)
@@ -119,17 +145,6 @@
             ;(disable-simulation game-state)))))
               (setf simulation-running nil))))))
 ; TODO handle ball-hole collision
-
-
-;  (flet ((compute-gravity-field (total-field body point-in-space)
-;           (with-slots (body-position body-mass) body
-;             (* +G+ (/ body-mass
-;                       (distance-between-vectors point-in-space body-position))))))
-;    (with-slots (celestial-bodies ball) game-state
-;      (let ((gravity-field (reduce (lambda (total body)
-;  (compute-gravity-field total body (slot-value ball 'position)))
-;  celestial-bodies)))
-;        (format t "Compute physics here.")))))
 
 (defmethod render ((game-state main-game-state)
                    gsm)
