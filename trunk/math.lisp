@@ -40,3 +40,8 @@
 
 (defun normalized-vector (vec1)
   (scaled-vector vec1 (/ 1.0 (vector-value vec1))))
+
+(defun clamp (what a b)
+  (if (< what a) a
+      (if (> what b) b
+          what)))
