@@ -11,7 +11,8 @@
            :negate-vector
            :distance-between-vectors
            :vector-value
-           :normalized-vector))
+           :normalized-vector
+           :clamp))
 ;;TODO exports
 
 (defpackage :trc.cloze-call
