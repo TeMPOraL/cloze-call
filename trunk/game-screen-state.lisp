@@ -29,7 +29,7 @@
   (declare (ignore gsm))
   (with-slots (big-picture-name big-picture accumulator) game-state
     (setf accumulator 0.0) ; zero the time accumulator
-    (setf big-picture (load-image big-picture-name))))
+    (setf big-picture (load-image big-picture-name :color-key-at #(0 0)))))
 
 (defmethod deinitialize-state ((game-state screen-game-state)
                                gsm)
@@ -49,5 +49,6 @@
 (defmethod render ((game-state screen-game-state)
                    gsm)
   (declare (ignore gsm))
+  (sdl:clear-display sdl:*black*)
   (with-slots (big-picture picture-position) game-state
     (draw-image big-picture)))

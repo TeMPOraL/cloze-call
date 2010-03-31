@@ -55,11 +55,20 @@
 ;;; Celestial Body class - defines objects that represent celestial bodies,
 ;;; which generate gravity on the map.
 (defclass celestial-body (game-object) 
-  () )
+  ((small
+    :initarg :small
+    :initform nil
+    :documentation "If planet is small (T) or big (NIL)")))
+
+(defun random-planet-image (&optional (small ""))
+  (format nil "planet~a~a.png" (+ 1 (random 20)) small))
 
 (defmethod init ((object celestial-body))
   (setf (slot-value object 'image)
-        (load-image "planet1-debug.bmp" :color-key-at #(0 0))))
+        (load-image (random-planet-image
+                     (if (slot-value object 'small)
+                         "-small"
+                         "")) :color-key-at #(0 0))))
 
 
 ;;; Ball class - defines the ball that player has to shoot into
@@ -76,7 +85,7 @@
 
 (defmethod init ((object ball))
   (setf (slot-value object 'image)
-        (load-image "ball-debug.bmp" :color-key-at #(0 0))))
+        (load-image "ball.png" :color-key-at #(0 0))))
 
 ;;; Hole class - defines the target for player to shoot ball at.
 (defclass hole (game-object)
@@ -84,4 +93,4 @@
 
 (defmethod init ((object hole))
   (setf (slot-value object 'image)
-        (load-image "hole-debug.bmp" :color-key-at #(0 0))))
+        (load-image "hole.png" :color-key-at #(0 0))))
