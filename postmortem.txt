@@ -1,0 +1,44 @@
+Cloze-Call Postmortem
+01.04.2010
+
+Hi,
+
+This is a postmortem for my 2010LGDC entry, called "Cloze-Call". It derives its name from Clozure Common Lisp, in which it was written (more on that topic in Section 2). It is also a reference to a phrase, "close call", which means achieving something or escaping by a narrow margin, which corresponds to the ball maneuvering between planets.
+
+The game itself is a very simple "Gravity Pong". Your goal as a player is to shoot a ball into a hole. The ball must not collide with any of the planets that are on screen. To make things more fun, all planets attract the ball by means of gravity force.
+
+1. What did I learn?
+Common Lisp, first of all. It is my first real project in Lisp. I started learning this language in summer 2009, but (thanks to university) I didn't have much time to write some real programs.
+
+Using ASDF - at least a little bit.
+
+That my old design concept for Game State Manager code (which I used for years in at least three other languages) has flaws to get ????
+
+2. What went right?
+Setting up the environment. I am working on 32-bit Windows 7. Even though I had to try out SBCL (which crashed on SDL examples), CLISP (too slow), ECL (also too slow) and SBCL on Ubuntu before ending up with well-working lispbuilsder-sdl and Clozure Common Lisp, I am surprised that the installation and setting up process wasn't that complicated and things actually worked first-time. I spent two days before the Challenge on setting up SDL and working environment.
+Graphic Design. This project confirmed what I actually learned recently - it is important to sacrifice some time and get decent-looking graphics / media for your product (be it a game, or anything else) and make it look nice. I'd be very unhappy if this game had circles and squares instead of those pictures, which I found on OpenGameArt.org.
+
+Fixed-step physics. I am using and promoting fixed time step approach to simulation in computer games, and it's the first time I really saw how good it is. During first physics test I had a fixed initial velocity vector for the ball, and I could see how it always travels the same path and lands in the same place.
+
+The game. It isn't finished, but it is playable and has most of the game mechanics implemented. I had to cut down on features as I was running out of time, but I shipped.
+
+3. What went wrong?
+Transparency in SDL - I made some little voodoo and made planets use alpha channel, but the same trick didn't worked for any other image. I'm still confused why it's not working, and this phenomena is responsible for ugly Victory/Defeat screens.
+
+Watching movies - I'd have at least few more hours to work on my game if I haven't found myself some stuff that I really, really wanted to watch.
+
+Bad naming conventions. I heard it's hard to give names to vector-math library functions. I done it wrong, and had to look for a bug for almost an hour. My vector math library that I wrote for this game had two kinds of functions - some were returning a new vector with the result of an operation, and some modified their arguments. In particular, I had (negative-vector) which returned a new vector representing inversed input parameter. The complimentary function was (negate-vector), which just negated its parameter. I used the latter instead of the former in physics code, and spent almost an hour trying to discover why graphics was flickering.
+
+6 days instead of 7. If I were more careful and wrote 2010-04-01 23:59GMT+1 instead of 2010-04-01 00:00GMT+1, I'd have one more day to work. I found my mistake about a day after signing up and decided not to change my initial declaration.
+
+4. What's lispy about my entry?
+It is in Lisp :). It is not that common to see a game in Lisp :).
+
+Few lambdas and high-order functions here and there. I think that my code is more like C++ with Lisp-syntax. But I guess, as for a first Lisp project, it's not that bad.
+
+5. What interesting algorithms or designs did I use?
+My good, old Game State Manager abstraction that I use everywhere. It simplified managing different game screens. Apart from that, I guess everything else is typical stuff you'll find in any computer game.
+
+
+
+At first I wasn't sure if I want to take part in the Contest. I have lot of stuff to do at university (and other places as well), I don't know that much Common Lisp, ect. etd. But, I thought, it would be a good occasion to actually learn much Lisp in short time, and write another game. I decided to sacrifice some university lectures and now I'm happy I did it. I'd like to thank David O'Toole for inviting me to #lispgames and encouraging me to take part in the Challenge. And I'd like to thank all of you #lispgames guys for support and nice time wasted (I should have been coding, not chatting :P) on IRC :).

@@ -32,7 +32,10 @@
     :documentation "State of left mouse button before last check. T if pressed, NIL if depressed.")
    (lives
     :initform 3
-    :documentation "How many attempts the player has.")))
+    :documentation "How many attempts the player has.")
+   (marker-image
+    :initform nil
+    :documentation "Image for marker that will show the ball position if the ball is off-screen.")))
 
 (defun rising-edge (signal-prev signal-curr)
   (and (null signal-prev) (not (null signal-curr))))
@@ -62,13 +65,14 @@
   (declare (ignore gsm))
   (with-slots (celestial-bodies ball hole simulation-running
                                 background-image next-level
-                                lives state)  game-state
+                                lives state marker-image)  game-state
     
     (load-level next-level)
     ;; * Load planets from level
     (setf celestial-bodies (level-get-celestial-bodies))
     ;; * Load other important objects
     (setf background-image (load-image (level-get-background-image-name)))
+    (setf marker-image (load-image "marker.png"))
 
     (setf lives 3)
     (setf state :aiming)
@@ -123,10 +127,28 @@
               (lambda (body) (collision-between-objects-p body ball))
               celestial-bodies))))
 
+(defun escape-velocity (celestial-bodies ball-position)
+  (let ((center-of-mass
+	 (scaled-vector (reduce (lambda (total body)
+		   (add-vectors (slot-value body 'position)
+				total))
+		 celestial-bodies
+		 :initial-value (make-vector-2d 0.0 0.0))
+	    (/ 1 (length celestial-bodies))))
+	(mass
+	 (reduce (lambda (total body)
+		   (+ total (slot-value body 'mass)))
+		 celestial-bodies
+		 :initial-value 0.0)))
+    (sqrt (abs (/ (* 2 +G+ mass) (distance-between-vectors center-of-mass ball-position))))))
+
 (defun offworld-p (celestial-bodies ball)
   "Returns true if the ball is far outside game world and has no chance of gettiing back in any reasonable amount of time."
-  (declare (ignore celestial-bodies ball))
-  nil)
+  (with-slots (position velocity) ball
+	      (if (> (distance-between-vectors position #(0 0))
+		     +offworld-max-distance-from-origin+)
+		  (> (vector-value velocity) (escape-velocity celestial-bodies position))
+		nil)))
 
 (defun collided-with-hole-p (ball hole)
   (collision-between-objects-p ball hole))
@@ -153,6 +175,22 @@
             +force-indicator-1/max-length+)
          0
          1))
+
+(defun offscreen-p (ball-position)
+  (or (> (elt ball-position 0) +screen-width+)
+      (> (elt ball-position 1) +screen-height+)
+      (< (elt ball-position 0) 0)
+      (< (elt ball-position 1) 0)))
+
+(defun compute-offscreen-marker-position (ball-position)
+  (make-vector-2d (abs (- (clamp (elt ball-position 0)
+				 0
+				 +screen-width+)
+			  +marker-distance-to-screen-border+))
+		  (abs (- (clamp (elt ball-position 1)
+				 0
+				 +screen-height+)
+			  +marker-distance-to-screen-border+))))
 
 (defun update-aiming (game-state dt)
   (declare (ignore dt))
@@ -194,10 +232,18 @@
     (if (collided-with-hole-p hole ball)
         (change-game-state game-state :hole-collision))))
 
-; TODO handle ball-hole collision
-
 (defun render-simulation (game-state)
-  (declare (ignore game-state)))
+  (with-slots (ball marker-image) game-state
+	      (with-slots (position) ball
+			  (when (offscreen-p position)
+			    (sdl:draw-circle-* (round (elt position 0))
+					       (round (elt position 1))
+					       (round (vector-value (add-vectors (negative-vector position)
+										 (compute-offscreen-marker-position position))))
+					       :color sdl:*green*
+					       :AA t)))))
+					     
+	      
 
 ;;; Hole collision
 (defun update-hole-collision (game-state dt gsm)

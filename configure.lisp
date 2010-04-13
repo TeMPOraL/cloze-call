@@ -23,7 +23,7 @@
 
 ;;; Game constants
 (defparameter +default-game-screen-time+ 2.0) ; in seconds
-(defparameter +G+ -5000) ; gravity constant 7*10^-11
+(defparameter +G+ -10000) ; gravity constant 7*10^-11
 (defparameter +default-ball-velocity+ 150)
 (defparameter +force-indicator-1/max-length+ (/ 1 300.0))
 
@@ -39,3 +39,7 @@
 (defparameter +max-y-grid-deviation+ 25)
 
 (defparameter +default-ball-starting-position+ #(50 50))
+(defparameter +offworld-max-distance-from-origin+ 2048)
+
+(defparameter +marker-distance-to-screen-border+ 10)
+(defparameter +marker-size+ #(20 20))

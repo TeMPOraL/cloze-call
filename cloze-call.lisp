@@ -40,6 +40,7 @@
                                                           :picture-name "victorious.png"
                                                           :next-state :main-game))
       (change-state gsm :intro-screen)
+      (enforce-proper-gsm-state gsm)
       ;;; EVENT PUMP / MAIN LOOP
       (sdl:with-events ()
         ;; INPUT EVENTS
