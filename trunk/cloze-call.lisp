@@ -13,6 +13,9 @@
 
 (format t "Hello from Cloze-Call~%")
 
+(defun run-test ()
+  (format t "~a~%" (truename "./")))
+
 (defun run-game ()
   (sdl:with-init (sdl:SDL-INIT-VIDEO sdl:SDL-INIT-AUDIO)
     (sdl:window +screen-width+ +screen-height+  ;screen resolution
